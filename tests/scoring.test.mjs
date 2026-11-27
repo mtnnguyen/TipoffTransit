@@ -1,0 +1,11 @@
+import test from "node:test";
+import assert from "node:assert/strict";
+import { haversineKm, proximityScore } from "../src/scoring.js";
+test("identical points",()=>assert.equal(haversineKm([0,0],[0,0]),0));
+test("one degree at equator",()=>assert.ok(Math.abs(haversineKm([0,0],[0,1])-111.195)<0.01));
+test("antipodes",()=>assert.ok(Number.isFinite(haversineKm([0,0],[0,180]))));
+test("maximum score",()=>assert.equal(proximityScore(0,0).score,100));
+test("decay scales",()=>assert.equal(proximityScore(8,3.2).score,37));
+test("venue weight",()=>assert.equal(proximityScore(0,1000).score,55));
+test("hub weight",()=>assert.equal(proximityScore(1000,0).score,45));
+test("invalid distances",()=>assert.throws(()=>proximityScore(-1,0),RangeError));

@@ -12,7 +12,7 @@ The current prototype supports:
 - Coca-Cola Coliseum
 - all 158 City of Toronto neighbourhoods
 - interactive choropleth scoring
-- top-five neighbourhood rankings
+- top-ten neighbourhood rankings
 - venue distance and nearest major rapid-transit hub
 - score filtering
 
@@ -28,8 +28,8 @@ The project combines my interests in sports, geospatial analysis, and interactiv
 
 The current accessibility score is an exploratory heuristic:
 
-- **65% venue proximity** — distance from a neighbourhood centroid to the selected venue.
-- **35% rapid-transit proximity** — distance from the centroid to the nearest major transit hub included in the prototype.
+- **55% venue proximity** — distance from a neighbourhood bounding-box centre to the selected venue.
+- **45% rapid-transit proximity** — distance from the bounding-box centre to the nearest major transit hub included in the prototype.
 
 Both components use a distance-decay function so closer neighbourhoods receive higher scores.
 
@@ -44,6 +44,8 @@ This is **not** a route planner and should not be interpreted as a formal transp
 - housing cost
 
 Those are natural directions for a more advanced version.
+
+Run scoring regression tests with `node --test tests/scoring.test.mjs` (Node 20+). Venue and hub decay scales are 8 km and 3.2 km respectively.
 
 ## Data
 
