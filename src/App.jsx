@@ -10,6 +10,7 @@ import {
   useMap,
 } from "react-leaflet";
 import L from "leaflet";
+import { haversineKm, proximityScore } from "./scoring.js";
 import {
   Search,
   MapPin,
@@ -47,24 +48,6 @@ const venueIcon = L.divIcon({
 /* -------------------------------------------------------
    GEO HELPERS
 ------------------------------------------------------- */
-
-function haversineKm(a, b) {
-  const R = 6371;
-
-  const dLat = ((b[0] - a[0]) * Math.PI) / 180;
-  const dLon = ((b[1] - a[1]) * Math.PI) / 180;
-
-  const lat1 = (a[0] * Math.PI) / 180;
-  const lat2 = (b[0] * Math.PI) / 180;
-
-  const x =
-    Math.sin(dLat / 2) ** 2 +
-    Math.cos(lat1) *
-      Math.cos(lat2) *
-      Math.sin(dLon / 2) ** 2;
-
-  return 2 * R * Math.asin(Math.sqrt(x));
-}
 
 function getNeighbourhoodCenter(feature) {
   const layer = L.geoJSON(feature);
@@ -111,22 +94,7 @@ function scoreFeature(feature, venueCoords) {
     45% major transit-hub proximity
   */
 
-  const venueComponent =
-    100 * Math.exp(-venueDistance / 8);
-
-  const transitComponent =
-    100 * Math.exp(-nearestHub.distance / 3.2);
-
-  const score = Math.round(
-    Math.max(
-      0,
-      Math.min(
-        100,
-        venueComponent * 0.55 +
-          transitComponent * 0.45
-      )
-    )
-  );
+  const { score, venueComponent, transitComponent } = proximityScore(venueDistance, nearestHub.distance);
 
   return {
     ...feature,
@@ -1174,7 +1142,7 @@ export default function App() {
 
                   <span>
                     Distance from the
-                    neighbourhood centre
+                    neighbourhood bounding-box centre
                     to the selected
                     venue.
                   </span>
